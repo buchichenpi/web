@@ -19,21 +19,22 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"baidu.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Kubernetes就像计算机集群的操作系统如下图所示，正如操作系统支持计算机的基本功能，如将进程调度到CPU上，并作为应用程序与计算机硬件之间的接口，Kubernetes将分布式应用程序的组件调度到底层计算机集群中的各个计算机上，并作为应用程序与集群之间的接口。 它使应用程序开发人员无需在应用程序中实现与基础设施相关的机制；相反，他们依赖Kubernetes来提供这些功能。这包括：  服务发现">
+    <meta name="description" content="理解k8s如何如何转换计算机集群Kubernetes就像计算机集群的操作系统如下图所示，正如操作系统支持计算机的基本功能，如将进程调度到CPU上，并作为应用程序与计算机硬件之间的接口，Kubernetes将分布式应用程序的组件调度到底层计算机集群中的各个计算机上，并作为应用程序与集群之间的接口。 它使应用程序开发人员无需在应用程序中实现与基础设施相关的机制；相反，他们依赖Kubernetes来提供">
 <meta property="og:type" content="article">
 <meta property="og:title" content="理解k8s">
 <meta property="og:url" content="http://baidu.com/2024/07/23/understanding-k8s/index.html">
 <meta property="og:site_name" content="静态站">
-<meta property="og:description" content="Kubernetes就像计算机集群的操作系统如下图所示，正如操作系统支持计算机的基本功能，如将进程调度到CPU上，并作为应用程序与计算机硬件之间的接口，Kubernetes将分布式应用程序的组件调度到底层计算机集群中的各个计算机上，并作为应用程序与集群之间的接口。 它使应用程序开发人员无需在应用程序中实现与基础设施相关的机制；相反，他们依赖Kubernetes来提供这些功能。这包括：  服务发现">
+<meta property="og:description" content="理解k8s如何如何转换计算机集群Kubernetes就像计算机集群的操作系统如下图所示，正如操作系统支持计算机的基本功能，如将进程调度到CPU上，并作为应用程序与计算机硬件之间的接口，Kubernetes将分布式应用程序的组件调度到底层计算机集群中的各个计算机上，并作为应用程序与集群之间的接口。 它使应用程序开发人员无需在应用程序中实现与基础设施相关的机制；相反，他们依赖Kubernetes来提供">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://baidu.com/2024/07/23/assets/image/1.png">
+<meta property="og:image" content="http://baidu.com/assets/image/1.png">
 <meta property="og:image" content="http://baidu.com/assets/image/2.png">
+<meta property="og:image" content="http://baidu.com/assets/image/3.png">
 <meta property="article:published_time" content="2024-07-22T16:01:09.000Z">
-<meta property="article:modified_time" content="2024-07-24T14:43:57.300Z">
+<meta property="article:modified_time" content="2024-07-24T15:34:39.982Z">
 <meta property="article:author" content="zhangcaiwang">
 <meta property="article:tag" content="k8s">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://baidu.com/2024/07/23/assets/image/1.png">
+<meta name="twitter:image" content="http://baidu.com/assets/image/1.png">
 
 
 <link rel="canonical" href="http://baidu.com/2024/07/23/understanding-k8s/">
@@ -115,7 +116,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Kubernetes%E5%B0%B1%E5%83%8F%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%9B%86%E7%BE%A4%E7%9A%84%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.</span> <span class="nav-text">Kubernetes就像计算机集群的操作系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kubernetes%E5%A6%82%E4%BD%95%E8%9E%8D%E5%85%A5%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%9B%86%E7%BE%A4"><span class="nav-number">2.</span> <span class="nav-text">Kubernetes如何融入计算机集群</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%90%86%E8%A7%A3k8s%E5%A6%82%E4%BD%95%E5%A6%82%E4%BD%95%E8%BD%AC%E6%8D%A2%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%9B%86%E7%BE%A4"><span class="nav-number">1.</span> <span class="nav-text">理解k8s如何如何转换计算机集群</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Kubernetes%E5%B0%B1%E5%83%8F%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%9B%86%E7%BE%A4%E7%9A%84%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.1.</span> <span class="nav-text">Kubernetes就像计算机集群的操作系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kubernetes%E5%A6%82%E4%BD%95%E8%9E%8D%E5%85%A5%E8%AE%A1%E7%AE%97%E6%9C%BA%E9%9B%86%E7%BE%A4"><span class="nav-number">1.2.</span> <span class="nav-text">Kubernetes如何融入计算机集群</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%80%E6%9C%89%E9%9B%86%E7%BE%A4%E8%8A%82%E7%82%B9%E5%A6%82%E4%BD%95%E6%88%90%E4%B8%BA%E4%B8%80%E4%B8%AA%E5%A4%A7%E5%9E%8B%E9%83%A8%E7%BD%B2%E5%8C%BA%E5%9F%9F"><span class="nav-number">1.3.</span> <span class="nav-text">所有集群节点如何成为一个大型部署区域</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8k8s%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="nav-number">2.</span> <span class="nav-text">使用k8s的好处</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -202,7 +203,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-07-24 22:43:57" itemprop="dateModified" datetime="2024-07-24T22:43:57+08:00">2024-07-24</time>
+      <time title="修改时间：2024-07-24 23:34:39" itemprop="dateModified" datetime="2024-07-24T23:34:39+08:00">2024-07-24</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -223,14 +224,17 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="Kubernetes就像计算机集群的操作系统"><a href="#Kubernetes就像计算机集群的操作系统" class="headerlink" title="Kubernetes就像计算机集群的操作系统"></a>Kubernetes就像计算机集群的操作系统</h1><p>如下图所示，正如操作系统支持计算机的基本功能，如将进程调度到CPU上，并作为<strong>应用程序</strong>与<strong>计算机硬件</strong>之间的接口，Kubernetes将分布式应用程序的组件调度<br>到底层计算机集群中的各个计算机上，并作为<strong>应用程序</strong>与<strong>集群</strong>之间的接口。<br><img alt="abc" height="200" src="../assets/image/1.png" width="700"/></p>
+    <div class="post-body" itemprop="articleBody"><h1 id="理解k8s如何如何转换计算机集群"><a href="#理解k8s如何如何转换计算机集群" class="headerlink" title="理解k8s如何如何转换计算机集群"></a>理解k8s如何如何转换计算机集群</h1><h2 id="Kubernetes就像计算机集群的操作系统"><a href="#Kubernetes就像计算机集群的操作系统" class="headerlink" title="Kubernetes就像计算机集群的操作系统"></a>Kubernetes就像计算机集群的操作系统</h2><p>如下图所示，正如操作系统支持计算机的基本功能，如将进程调度到CPU上，并作为<strong>应用程序</strong>与<strong>计算机硬件</strong>之间的接口，Kubernetes将分布式应用程序的组件调度<br>到底层计算机集群中的各个计算机上，并作为<strong>应用程序</strong>与<strong>集群</strong>之间的接口。<br><br><img src="/../assets/image/1.png" alt="abc"><br></p>
 <p>它使应用程序开发人员无需在应用程序中实现与基础设施相关的机制；相反，他们依赖Kubernetes来提供这些功能。这包括：</p>
 <blockquote>
 <p>服务发现 - 一种机制，允许应用程序找到其他应用程序并使用它们提供的服务<br>水平扩展 - 通过复制应用程序来适应负载波动<br>负载均衡 - 将负载分布到所有应用程序副本上<br>自我修复 - 通过自动重启失败的应用程序并在其节点失败后将其移动到健康的节点上来保持系统健康<br>领导者选举 - 一种机制，用于决定哪个应用程序实例应该处于活动状态，而其他实例则保持空闲但准备好在活动实例失败时接管。  </p>
 </blockquote>
-<h1 id="Kubernetes如何融入计算机集群"><a href="#Kubernetes如何融入计算机集群" class="headerlink" title="Kubernetes如何融入计算机集群"></a>Kubernetes如何融入计算机集群</h1><p>为了获得一个关于Kubernetes如何部署到计算机集群中的具体示例，请查看下图。  </p>
-<p><img src="/../assets/image/2.png" alt="2">  </p>
-
+<h2 id="Kubernetes如何融入计算机集群"><a href="#Kubernetes如何融入计算机集群" class="headerlink" title="Kubernetes如何融入计算机集群"></a>Kubernetes如何融入计算机集群</h2><p>为了获得一个关于Kubernetes如何部署到计算机集群中的具体示例，请查看下图。  </p>
+<p><img src="/../assets/image/2.png" alt="2"><br><br>你首先会有一组机器，你将这些机器分为两组——主节点和工作节点。主节点将运行Kubernetes控制平面，它代表系统的“大脑”并控制集群，<br>而其余节点将运行你的应用程序——即你的工作负载——因此将代表工作负载平面。<br></p>
+<p>非生产集群可以使用单个主节点，但高可用集群至少使用三个物理主节点来承载控制平面。工作节点的数量取决于您要部署的应用程序的数量。<br></p>
+<h2 id="所有集群节点如何成为一个大型部署区域"><a href="#所有集群节点如何成为一个大型部署区域" class="headerlink" title="所有集群节点如何成为一个大型部署区域"></a>所有集群节点如何成为一个大型部署区域</h2><p>在计算机上安装 Kubernetes 后，部署应用程序时不再需要考虑单个计算机。无论集群中工作节点的数量是多少，它们都将成为部署应用程序的单一空间。<br>您可以使用Kubernetes API来实现这一点，该API是由Kubernetes控制平面提供的。<br><br><img src="/../assets/image/3.png" alt="3"><br></p>
+<p>这里说的所有节点是一个整体，并不是说可以将一个很大的应用部署在多个节点上。而且也不必在意应用最终部署在了哪个节点上，<br>因为k8s可能在你不知情的时候把应用从一个节点移动到另外一个节点上，这也不是部署者需要知道到事儿。<br></p>
+<h1 id="使用k8s的好处"><a href="#使用k8s的好处" class="headerlink" title="使用k8s的好处"></a>使用k8s的好处</h1>
     </div>
 
     
