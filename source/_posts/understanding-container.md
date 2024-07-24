@@ -4,6 +4,6 @@ date: 2024-07-22 23:51:35
 tags: 
  - 容器
  - k8s
-categories: k8s学习
+categories: k8s实战笔记
 ---
 #
