@@ -26,19 +26,19 @@
 <meta property="og:site_name" content="不吃陈皮">
 <meta property="og:description" content="理解k8s如何如何转换计算机集群Kubernetes就像计算机集群的操作系统如下图所示，正如操作系统支持计算机的基本功能，如将进程调度到CPU上，并作为应用程序与计算机硬件之间的接口，Kubernetes将分布式应用程序的组件调度到底层计算机集群中的各个计算机上，并作为应用程序与集群之间的接口。 它使应用程序开发人员无需在应用程序中实现与基础设施相关的机制；相反，他们依赖Kubernetes来提供">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://baidu.com/assets/image/1.png">
-<meta property="og:image" content="http://baidu.com/assets/image/2.png">
-<meta property="og:image" content="http://baidu.com/assets/image/3.png">
-<meta property="og:image" content="http://baidu.com/assets/image/4.png">
-<meta property="og:image" content="http://baidu.com/assets/image/5.png">
-<meta property="og:image" content="http://baidu.com/assets/image/6.png">
-<meta property="og:image" content="http://baidu.com/assets/image/7.png">
+<meta property="og:image" content="http://baidu.com/assets/image/k8s-in-action/1.png">
+<meta property="og:image" content="http://baidu.com/assets/image/k8s-in-action/2.png">
+<meta property="og:image" content="http://baidu.com/assets/image/k8s-in-action/3.png">
+<meta property="og:image" content="http://baidu.com/assets/image/k8s-in-action/4.png">
+<meta property="og:image" content="http://baidu.com/assets/image/k8s-in-action/5.png">
+<meta property="og:image" content="http://baidu.com/assets/image/k8s-in-action/6.png">
+<meta property="og:image" content="http://baidu.com/assets/image/k8s-in-action/7.png">
 <meta property="article:published_time" content="2024-07-22T16:01:09.000Z">
-<meta property="article:modified_time" content="2024-07-27T15:15:58.480Z">
+<meta property="article:modified_time" content="2024-07-28T06:21:12.254Z">
 <meta property="article:author" content="buchichenpi">
 <meta property="article:tag" content="k8s">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://baidu.com/assets/image/1.png">
+<meta name="twitter:image" content="http://baidu.com/assets/image/k8s-in-action/1.png">
 
 
 <link rel="canonical" href="http://baidu.com/2024/07/23/k8s-in-action/understanding-k8s/">
@@ -207,7 +207,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-07-27 23:15:58" itemprop="dateModified" datetime="2024-07-27T23:15:58+08:00">2024-07-27</time>
+      <time title="修改时间：2024-07-28 14:21:12" itemprop="dateModified" datetime="2024-07-28T14:21:12+08:00">2024-07-28</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -235,15 +235,15 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="理解k8s如何如何转换计算机集群"><a href="#理解k8s如何如何转换计算机集群" class="headerlink" title="理解k8s如何如何转换计算机集群"></a>理解k8s如何如何转换计算机集群</h1><h2 id="Kubernetes就像计算机集群的操作系统"><a href="#Kubernetes就像计算机集群的操作系统" class="headerlink" title="Kubernetes就像计算机集群的操作系统"></a>Kubernetes就像计算机集群的操作系统</h2><p>如下图所示，正如操作系统支持计算机的基本功能，如将进程调度到CPU上，并作为<strong>应用程序</strong>与<strong>计算机硬件</strong>之间的接口，Kubernetes将分布式应用程序的组件调度<br>到底层计算机集群中的各个计算机上，并作为<strong>应用程序</strong>与<strong>集群</strong>之间的接口。<br><br><img src="/../../assets/image/1.png" alt="abc"><br></p>
+    <div class="post-body" itemprop="articleBody"><h1 id="理解k8s如何如何转换计算机集群"><a href="#理解k8s如何如何转换计算机集群" class="headerlink" title="理解k8s如何如何转换计算机集群"></a>理解k8s如何如何转换计算机集群</h1><h2 id="Kubernetes就像计算机集群的操作系统"><a href="#Kubernetes就像计算机集群的操作系统" class="headerlink" title="Kubernetes就像计算机集群的操作系统"></a>Kubernetes就像计算机集群的操作系统</h2><p>如下图所示，正如操作系统支持计算机的基本功能，如将进程调度到CPU上，并作为<strong>应用程序</strong>与<strong>计算机硬件</strong>之间的接口，Kubernetes将分布式应用程序的组件调度<br>到底层计算机集群中的各个计算机上，并作为<strong>应用程序</strong>与<strong>集群</strong>之间的接口。<br><br><img src="/../../assets/image/k8s-in-action/1.png" alt="abc"><br></p>
 <p>它使应用程序开发人员无需在应用程序中实现与基础设施相关的机制；相反，他们依赖Kubernetes来提供这些功能。这包括：</p>
 <blockquote>
 <p>服务发现 - 一种机制，允许应用程序找到其他应用程序并使用它们提供的服务<br>水平扩展 - 通过复制应用程序来适应负载波动<br>负载均衡 - 将负载分布到所有应用程序副本上<br>自我修复 - 通过自动重启失败的应用程序并在其节点失败后将其移动到健康的节点上来保持系统健康<br>领导者选举 - 一种机制，用于决定哪个应用程序实例应该处于活动状态，而其他实例则保持空闲但准备好在活动实例失败时接管。  </p>
 </blockquote>
 <h2 id="Kubernetes如何融入计算机集群"><a href="#Kubernetes如何融入计算机集群" class="headerlink" title="Kubernetes如何融入计算机集群"></a>Kubernetes如何融入计算机集群</h2><p>为了获得一个关于Kubernetes如何部署到计算机集群中的具体示例，请查看下图。  </p>
-<p><img src="/../../assets/image/2.png" alt="2"><br><br>你首先会有一组机器，你将这些机器分为两组——主节点和工作节点。主节点将运行Kubernetes控制平面，它代表系统的“大脑”并控制集群， 而其余节点将运行你的应用程序——即你的工作负载——因此将代表工作负载平面。<br></p>
+<p><img src="/../../assets/image/k8s-in-action/2.png" alt="2"><br><br>你首先会有一组机器，你将这些机器分为两组——主节点和工作节点。主节点将运行Kubernetes控制平面，它代表系统的“大脑”并控制集群， 而其余节点将运行你的应用程序——即你的工作负载——因此将代表工作负载平面。<br></p>
 <p>非生产集群可以使用单个主节点，但高可用集群至少使用三个物理主节点来承载控制平面。工作节点的数量取决于您要部署的应用程序的数量。<br></p>
-<h2 id="所有集群节点如何成为一个大型部署区域"><a href="#所有集群节点如何成为一个大型部署区域" class="headerlink" title="所有集群节点如何成为一个大型部署区域"></a>所有集群节点如何成为一个大型部署区域</h2><p>在计算机上安装 Kubernetes 后，部署应用程序时不再需要考虑单个计算机。无论集群中工作节点的数量是多少，它们都将成为部署应用程序的单一空间。<br>可以使用Kubernetes API来实现这一点，该API是由Kubernetes控制平面提供的。<br><br><img src="/../../assets/image/3.png" alt="3"><br></p>
+<h2 id="所有集群节点如何成为一个大型部署区域"><a href="#所有集群节点如何成为一个大型部署区域" class="headerlink" title="所有集群节点如何成为一个大型部署区域"></a>所有集群节点如何成为一个大型部署区域</h2><p>在计算机上安装 Kubernetes 后，部署应用程序时不再需要考虑单个计算机。无论集群中工作节点的数量是多少，它们都将成为部署应用程序的单一空间。<br>可以使用Kubernetes API来实现这一点，该API是由Kubernetes控制平面提供的。<br><br><img src="/../../assets/image/k8s-in-action/3.png" alt="3"><br></p>
 <p>这里说的所有节点是一个整体，并不是说可以将一个很大的应用部署在多个节点上。而且也不必在意应用最终部署在了哪个节点上，  因为k8s可能在你不知情的时候把应用从一个节点移动到另外一个节点上，这也不是部署者需要知道到事儿。<br></p>
 <h1 id="使用k8s的好处"><a href="#使用k8s的好处" class="headerlink" title="使用k8s的好处"></a>使用k8s的好处</h1><h2 id="开发者自助部署应用程序-Self-service-development"><a href="#开发者自助部署应用程序-Self-service-development" class="headerlink" title="开发者自助部署应用程序(Self-service development)"></a>开发者自助部署应用程序(Self-service development)</h2><p>以前部署应用都是由专门的人员部署，有了k8s以后，程序可以自己通过k8s部署。他们不需要了解节点多少和节点的性能，也不用知道部署在哪个节点上，k8s将根据应用的需要的资源和节点可用的资源选择部署的节点。<br></p>
 <h2 id="通过更好的基础设施利用率降低成本"><a href="#通过更好的基础设施利用率降低成本" class="headerlink" title="通过更好的基础设施利用率降低成本"></a>通过更好的基础设施利用率降低成本</h2><p>k8s可以比人更快速地找到哪个应用更适合部署在哪个节点上，通过在一台服务器上部署多个不同的服务，k8s提高了硬件的利用率，以至于可以在更少的服务器上部署更多的应用。<br></p>
@@ -251,17 +251,17 @@
 <h2 id="保持应用程序平稳运行"><a href="#保持应用程序平稳运行" class="headerlink" title="保持应用程序平稳运行"></a>保持应用程序平稳运行</h2><p>1.当你当程序崩溃或者因为代码bug导致内存溢出，k8s可以自动为你重启应用，保证服务可以正常对外提供服务。<br>2.当硬件出现故障时，k8s可以将你的应用迁移到正常到节点上。<br>3.如果资源足够，哪怕是节点半夜出现了故障，k8s也会自动处理，运维同学则可以睡个好觉啦。</p>
 <h2 id="简化程序部署"><a href="#简化程序部署" class="headerlink" title="简化程序部署"></a>简化程序部署</h2><p>Kubernetes 提供了与基础设施相关的服务，这些服务在没有 Kubernetes 的情况下需要在自己的应用程序中实现。这包括在分布式应用程序中发现服务和&#x2F;或对等节点、领导者选举、集中式应用程序配置等。Kubernetes 在提供这些服务的同时，保持了对应用程序的“无 Kubernetes 感知”特性，但当需要时，应用程序也可以查询 Kubernetes API 以获取有关其环境的详细信息。它们还可以使用 API 来更改环境。<br></p>
 <h1 id="Kubernetes集群的架构"><a href="#Kubernetes集群的架构" class="headerlink" title="Kubernetes集群的架构"></a>Kubernetes集群的架构</h1><p>k8s集群里的节点被分成了两组：<br>1.由master节点组成的控制面板集群，是系统的大脑，控制整个集群。<br>2.运行应用的一组负载面板。</p>
-<p><img src="/../../assets/image/4.png" alt="4"><br></p>
-<h2 id="控制面板组件（control-plane）"><a href="#控制面板组件（control-plane）" class="headerlink" title="控制面板组件（control plane）"></a>控制面板组件（control plane）</h2><p>k8s的控制面板由多个组件构成，这些组件运行在master节点上，为了提高可用性，也可能运行在多个master节点上。<br><br><img src="/../../assets/image/5.png" alt="5"><br>下面是控制面板里的组件和他们的功能：</p>
+<p><img src="/../../assets/image/k8s-in-action/4.png" alt="4"><br></p>
+<h2 id="控制面板组件（control-plane）"><a href="#控制面板组件（control-plane）" class="headerlink" title="控制面板组件（control plane）"></a>控制面板组件（control plane）</h2><p>k8s的控制面板由多个组件构成，这些组件运行在master节点上，为了提高可用性，也可能运行在多个master节点上。<br><br><img src="/../../assets/image/k8s-in-action/5.png" alt="5"><br>下面是控制面板里的组件和他们的功能：</p>
 <blockquote>
 <p><strong>API Server</strong>：提供了 RESTful 风格的 Kubernetes API，工程师通过此api创建对象。它提供了 REST API 供集群内部组件和外部客户端（如 kubectl、kubelet 等）进行通信和交互。<br><strong>etcd</strong>：etcd分布式存储服务存储了通过api创建的对象，以及存储 Kubernetes 集群的所有配置数据，如 API 对象的状态信息。<br><strong>调度器</strong>：决定每个应用程序实例应在哪个工作节点上运行<br><strong>控制器（Controllers）</strong>：通过 API 激活创建的对象。它们中的大多数只是创建其他对象，但也有一些与外部系统（例如，通过其 API 与云提供商）进行通信。</p>
 </blockquote>
-<h2 id="工作节点组件（worker-node）"><a href="#工作节点组件（worker-node）" class="headerlink" title="工作节点组件（worker node）"></a>工作节点组件（worker node）</h2><p>工作组件上运行了我们的应用程序，也运行了一些k8s组件，这些组件提供了运行程序、监控、程序之间的连接等功能。<br>下图展示了工作节点上运行等k8s组件。<br><br><img src="/../../assets/image/6.png" alt="6"><br>下面是运行的k8s组件</p>
+<h2 id="工作节点组件（worker-node）"><a href="#工作节点组件（worker-node）" class="headerlink" title="工作节点组件（worker node）"></a>工作节点组件（worker node）</h2><p>工作组件上运行了我们的应用程序，也运行了一些k8s组件，这些组件提供了运行程序、监控、程序之间的连接等功能。<br>下图展示了工作节点上运行等k8s组件。<br><br><img src="/../../assets/image/k8s-in-action/6.png" alt="6"><br>下面是运行的k8s组件</p>
 <blockquote>
 <p><strong>Kubelet</strong>：是一个与API服务器通信并管理其节点上运行的应用程序的代理。它通过API报告这些应用程序和节点的状态。<br><strong>容器运行时（Container Runtime）</strong>：可以是Docker或任何与Kubernetes兼容的其他运行时（runtime）。它根据Kubelet的指示在容器中运行应用程序。<br><strong>Kubernetes服务代理（Kube-Proxy）</strong>：负责在应用程序之间负载均衡网络流量。尽管它的名字暗示流量会流经它，但实际上已经不再是这样了。Kube-Proxy的主要作用是通过网络规则来确保服务间的通信，而不是直接代理或转发流量。</p>
 </blockquote>
 <h2 id="附加组件（add-on"><a href="#附加组件（add-on" class="headerlink" title="附加组件（add-on)"></a>附加组件（add-on)</h2><p>大多数Kubernetes集群还包含其他几个组件，包括DNS服务器、网络插件、日志代理等。这些组件通常运行在工作节点上，但也可以配置为在主节点上运行。这些组件共同协作，以确保Kubernetes集群的顺利运行和高效管理。例如，DNS服务器负责集群内的服务发现，网络插件管理集群的网络配置和通信，而日志代理则负责收集和分析集群中应用程序的日志信息。<br></p>
-<h1 id="k8s是如何运行一个程序的"><a href="#k8s是如何运行一个程序的" class="headerlink" title="k8s是如何运行一个程序的"></a>k8s是如何运行一个程序的</h1><h2 id="定义应用程序"><a href="#定义应用程序" class="headerlink" title="定义应用程序"></a>定义应用程序</h2><p>在Kubernetes中，一切都被表示为对象，且通过Kubernetes API创建和检索这些对象。应用程序由这些对象的几种类型组成——一种类型代表整个应用程序的部署，另一种类型代表应用程序的<strong>一个</strong>正在运行的实例，还有一种类型代表由这些实例集合提供的服务，并允许通过单个IP地址访问它们，此外还有许多其他类型。<br><br>下图展示了通过创建一个清单文件来部署应用程序的示例，该清单文件包含两个部署，并通过两个服务对外暴露这两个部署。<br><br><img src="/../../assets/image/7.png" alt="7"><br>部署应用程序的时候会发生下面的动作：</p>
+<h1 id="k8s是如何运行一个程序的"><a href="#k8s是如何运行一个程序的" class="headerlink" title="k8s是如何运行一个程序的"></a>k8s是如何运行一个程序的</h1><h2 id="定义应用程序"><a href="#定义应用程序" class="headerlink" title="定义应用程序"></a>定义应用程序</h2><p>在Kubernetes中，一切都被表示为对象，且通过Kubernetes API创建和检索这些对象。应用程序由这些对象的几种类型组成——一种类型代表整个应用程序的部署，另一种类型代表应用程序的<strong>一个</strong>正在运行的实例，还有一种类型代表由这些实例集合提供的服务，并允许通过单个IP地址访问它们，此外还有许多其他类型。<br><br>下图展示了通过创建一个清单文件来部署应用程序的示例，该清单文件包含两个部署，并通过两个服务对外暴露这两个部署。<br><br><img src="/../../assets/image/k8s-in-action/7.png" alt="7"><br>部署应用程序的时候会发生下面的动作：</p>
 <ul>
 <li>你将应用程序清单提交给Kubernetes API。API服务器将清单中定义的对象写入etcd。</li>
 <li>一个控制器注意到新创建的对象，并为每个应用程序实例创建了一个新对象。</li>

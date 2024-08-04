@@ -184,9 +184,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2024-07-27 23:51:35 / 修改时间：23:38:10" itemprop="dateCreated datePublished" datetime="2024-07-27T23:51:35+08:00">2024-07-27</time>
+      <time title="创建时间：2024-07-27 23:51:35" itemprop="dateCreated datePublished" datetime="2024-07-27T23:51:35+08:00">2024-07-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-07-28 14:45:35" itemprop="dateModified" datetime="2024-07-28T14:45:35+08:00">2024-07-28</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -208,7 +214,29 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id=""><a href="#" class="headerlink" title=""></a></h1>
+          <p>当系统只有少量应用的时候，为每一个应用分配一个虚拟机并把应用运行在该虚拟机的系统上是没问题的。但是当使用微服务的时候，应用数量不断上升，这个时候再使用刚才的策略将消耗特别多的硬件资源，花费也是高昂的。<br><br>此外，每个虚拟机通常都需要单独配置和管理，这意味着运行更多的虚拟机也会导致对人员配置提出更高要求，并需要更好的、往往也更复杂的自动化系统。由于向微服务架构的转变，系统由数百个已部署的应用程序实例组成，因此需要虚拟机的替代品。容器就是这样的替代品。<br></p>
+<h2 id="对比容器和虚拟机"><a href="#对比容器和虚拟机" class="headerlink" title="对比容器和虚拟机"></a>对比容器和虚拟机</h2><p>与使用虚拟机来隔离各个微服务（或一般软件进程）的环境不同，现在大多数开发和运营团队更喜欢使用容器。它们允许您在同一台主机计算机上运行多个服务，同时保持它们彼此隔离。与虚拟机相似，但开销要小得多。<br><br>与每个都运行一个带有多个系统进程的独立操作系统的虚拟机不同，在容器中运行的进程在现有的主机操作系统内运行。由于只有一个操作系统，因此不存在重复的系统进程。尽管所有的应用程序进程都在同一个操作系统中运行，但它们的环境是隔离的，尽管隔离程度不如在单独的虚拟机中运行它们时好。对于容器中的进程而言，这种隔离使其看起来就像计算机上不存在其他进程一样。<br></p>
+<h3 id="容器和虚拟机的开销对比"><a href="#容器和虚拟机的开销对比" class="headerlink" title="容器和虚拟机的开销对比"></a>容器和虚拟机的开销对比</h3><p>与虚拟机相比，容器要轻得多，因为它们不需要单独的资源池或任何额外的操作系统级进程。每个虚拟机通常都运行自己的一套系统进程，这些进程除了用户应用程序自己的进程所消耗的资源外，还需要额外的计算资源，但容器只是在现有主机操作系统中运行的一个隔离进程，它只消耗应用程序所消耗的资源。</p>
+<p>下图显示了两台裸机计算机（bare metal computer），一台运行两个虚拟机，另一台则运行容器。后者有空间容纳额外的容器，因为它只运行一个操作系统，而第一台则运行三个——一个主机操作系统和两个guest操作系统。</p>
+<p><img src="/../../assets/image/k8s-in-action/8.png" alt="8"><br>由于虚拟机的资源开销，你通常会将多个应用程序分组到每个虚拟机中。你无法承担为每个应用程序分配一个完整的虚拟机的费用。但是容器不会引入任何开销，这意味着你可以承担为每个应用程序创建一个单独的容器的费用。事实上，你永远不应该在同一个容器中运行多个应用程序，因为这会使管理容器中的进程变得更加困难。此外，包括Kubernetes本身在内的所有处理容器的现有软件，都是在容器中只有一个应用程序的前提下设计的。</p>
+<h3 id="容器和虚拟机的启动时间对比"><a href="#容器和虚拟机的启动时间对比" class="headerlink" title="容器和虚拟机的启动时间对比"></a>容器和虚拟机的启动时间对比</h3><p>除了较低的运行时开销外，容器还能更快地启动应用程序，因为只需要启动应用程序进程本身。与启动新虚拟机时需要首先启动额外的系统进程不同，容器不需要这样做。</p>
+<h3 id="容器和虚拟机的隔离对比（isolation）"><a href="#容器和虚拟机的隔离对比（isolation）" class="headerlink" title="容器和虚拟机的隔离对比（isolation）"></a>容器和虚拟机的隔离对比（isolation）</h3><p>就资源使用而言，容器显然更胜一筹，但也存在一个缺点。当在虚拟机中运行应用程序时，每个虚拟机都会运行自己的操作系统和内核。在这些虚拟机之下是超管理器（以及可能的一个额外的操作系统），它将物理硬件资源分割成较小的虚拟资源集，供每个虚拟机中的操作系统使用。如下图所示，在这些虚拟机中运行的应用程序会对虚拟机中的客户操作系统内核发出<code>系统调用</code>，然后内核在虚拟CPU上执行的机器指令会通过超管理器转发给主机的物理CPU。<br><img src="/../../assets/image/k8s-in-action/9.png" alt="9"><br>另一方面，所有容器都在宿主操作系统中运行的单一内核上进行系统调用。这个单一内核是宿主CPU上唯一执行指令的实体。CPU不需要像处理虚拟机那样处理任何形式的虚拟化。<br><img src="/../../assets/image/k8s-in-action/10.png" alt="10"><br>在第一种情况下，所有三个应用程序都使用相同的内核，并且完全没有隔离。在第二种情况下，应用程序A和B在同一个虚拟机中运行，因此共享内核，而应用程序C则完全与其他两个隔离，因为它使用自己的内核。它只与前两个共享硬件。</p>
+<p>第三种情况显示了三个应用程序在容器中运行。尽管它们都使用相同的内核，但它们彼此隔离，并且完全不知道其他应用程序的存在。隔离是由内核本身提供的。每个应用程序只看到物理硬件的一部分，并且将自己视为操作系统中唯一运行的进程，尽管它们都在同一个操作系统中运行。</p>
+<h3 id="理解容器隔离的安全性影响"><a href="#理解容器隔离的安全性影响" class="headerlink" title="理解容器隔离的安全性影响"></a>理解容器隔离的安全性影响</h3><p>使用虚拟机而不是容器的主要优势是它们提供的完全隔离性，因为每个虚拟机都有自己的Linux内核，而所有容器都使用同一个内核。这明显会带来安全风险。如果内核中存在漏洞，一个容器中的应用程序可能会利用它来读取其他容器中应用程序的内存。如果应用程序在不同的虚拟机上运行，因此只共享硬件，那么此类攻击的可能性要低得多。当然，只有在不同的物理机器上运行应用程序才能实现完全隔离。</p>
+<p>此外，容器共享内存空间，而每个虚拟机都使用自己的内存块。因此，如果不限制容器可以使用的内存量，这可能会导致其他容器内存不足或将其数据交换到磁盘上。</p>
+<h3 id="理解容器和虚拟机的工作原理"><a href="#理解容器和虚拟机的工作原理" class="headerlink" title="理解容器和虚拟机的工作原理"></a>理解容器和虚拟机的工作原理</h3><p>虚拟机是通过CPU中的虚拟化支持和宿主机上的虚拟化软件来启用的，容器是由Linux内核本身启用的。</p>
+<h2 id="介绍Docker容器平台"><a href="#介绍Docker容器平台" class="headerlink" title="介绍Docker容器平台"></a>介绍Docker容器平台</h2><p>虽然容器技术已经存在很长时间了，但它们只是随着Docker的兴起才变得广为人知。Docker是第一个使容器能够轻松地在不同计算机之间移植的容器系统。它简化了将应用程序及其所有库和其他依赖项（甚至整个操作系统文件系统）打包成一个简单、可移植的包的过程，该包可用于在任何运行Docker的计算机上部署应用程序。</p>
+<h3 id="介绍容器、镜像和注册中心（container、image、registry）"><a href="#介绍容器、镜像和注册中心（container、image、registry）" class="headerlink" title="介绍容器、镜像和注册中心（container、image、registry）"></a>介绍容器、镜像和注册中心（container、image、registry）</h3><p>Docker是一个用于打包、分发和运行应用程序的平台。如前所述，它允许您将应用程序及其整个环境一起打包。这可能只是应用程序所需的一些动态链接库，或者是随操作系统一起提供的所有文件。Docker允许您通过公共存储库将此包分发到任何启用了Docker的计算机上。<br><img src="/../../assets/image/k8s-in-action/11.png" alt="11"></p>
+<ul>
+<li><strong>Image</strong>：容器镜像是您将应用程序及其环境打包成的东西，类似于一个压缩文件或归档文件。它包含了应用程序将使用的整个文件系统以及额外的元数据，比如当镜像被执行时运行的可执行文件的路径、应用程序监听的端口，以及关于镜像的其他信息。</li>
+<li><strong>Registry</strong>：</li>
+<li><strong>Container</strong>：</li>
+</ul>
+<br>
+<br>
+
+
+
       
     </div>
 
@@ -270,7 +298,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-07-27 23:15:58" itemprop="dateModified" datetime="2024-07-27T23:15:58+08:00">2024-07-27</time>
+      <time title="修改时间：2024-07-28 14:21:12" itemprop="dateModified" datetime="2024-07-28T14:21:12+08:00">2024-07-28</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -292,15 +320,15 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="理解k8s如何如何转换计算机集群"><a href="#理解k8s如何如何转换计算机集群" class="headerlink" title="理解k8s如何如何转换计算机集群"></a>理解k8s如何如何转换计算机集群</h1><h2 id="Kubernetes就像计算机集群的操作系统"><a href="#Kubernetes就像计算机集群的操作系统" class="headerlink" title="Kubernetes就像计算机集群的操作系统"></a>Kubernetes就像计算机集群的操作系统</h2><p>如下图所示，正如操作系统支持计算机的基本功能，如将进程调度到CPU上，并作为<strong>应用程序</strong>与<strong>计算机硬件</strong>之间的接口，Kubernetes将分布式应用程序的组件调度<br>到底层计算机集群中的各个计算机上，并作为<strong>应用程序</strong>与<strong>集群</strong>之间的接口。<br><br><img src="/../../assets/image/1.png" alt="abc"><br></p>
+          <h1 id="理解k8s如何如何转换计算机集群"><a href="#理解k8s如何如何转换计算机集群" class="headerlink" title="理解k8s如何如何转换计算机集群"></a>理解k8s如何如何转换计算机集群</h1><h2 id="Kubernetes就像计算机集群的操作系统"><a href="#Kubernetes就像计算机集群的操作系统" class="headerlink" title="Kubernetes就像计算机集群的操作系统"></a>Kubernetes就像计算机集群的操作系统</h2><p>如下图所示，正如操作系统支持计算机的基本功能，如将进程调度到CPU上，并作为<strong>应用程序</strong>与<strong>计算机硬件</strong>之间的接口，Kubernetes将分布式应用程序的组件调度<br>到底层计算机集群中的各个计算机上，并作为<strong>应用程序</strong>与<strong>集群</strong>之间的接口。<br><br><img src="/../../assets/image/k8s-in-action/1.png" alt="abc"><br></p>
 <p>它使应用程序开发人员无需在应用程序中实现与基础设施相关的机制；相反，他们依赖Kubernetes来提供这些功能。这包括：</p>
 <blockquote>
 <p>服务发现 - 一种机制，允许应用程序找到其他应用程序并使用它们提供的服务<br>水平扩展 - 通过复制应用程序来适应负载波动<br>负载均衡 - 将负载分布到所有应用程序副本上<br>自我修复 - 通过自动重启失败的应用程序并在其节点失败后将其移动到健康的节点上来保持系统健康<br>领导者选举 - 一种机制，用于决定哪个应用程序实例应该处于活动状态，而其他实例则保持空闲但准备好在活动实例失败时接管。  </p>
 </blockquote>
 <h2 id="Kubernetes如何融入计算机集群"><a href="#Kubernetes如何融入计算机集群" class="headerlink" title="Kubernetes如何融入计算机集群"></a>Kubernetes如何融入计算机集群</h2><p>为了获得一个关于Kubernetes如何部署到计算机集群中的具体示例，请查看下图。  </p>
-<p><img src="/../../assets/image/2.png" alt="2"><br><br>你首先会有一组机器，你将这些机器分为两组——主节点和工作节点。主节点将运行Kubernetes控制平面，它代表系统的“大脑”并控制集群， 而其余节点将运行你的应用程序——即你的工作负载——因此将代表工作负载平面。<br></p>
+<p><img src="/../../assets/image/k8s-in-action/2.png" alt="2"><br><br>你首先会有一组机器，你将这些机器分为两组——主节点和工作节点。主节点将运行Kubernetes控制平面，它代表系统的“大脑”并控制集群， 而其余节点将运行你的应用程序——即你的工作负载——因此将代表工作负载平面。<br></p>
 <p>非生产集群可以使用单个主节点，但高可用集群至少使用三个物理主节点来承载控制平面。工作节点的数量取决于您要部署的应用程序的数量。<br></p>
-<h2 id="所有集群节点如何成为一个大型部署区域"><a href="#所有集群节点如何成为一个大型部署区域" class="headerlink" title="所有集群节点如何成为一个大型部署区域"></a>所有集群节点如何成为一个大型部署区域</h2><p>在计算机上安装 Kubernetes 后，部署应用程序时不再需要考虑单个计算机。无论集群中工作节点的数量是多少，它们都将成为部署应用程序的单一空间。<br>可以使用Kubernetes API来实现这一点，该API是由Kubernetes控制平面提供的。<br><br><img src="/../../assets/image/3.png" alt="3"><br></p>
+<h2 id="所有集群节点如何成为一个大型部署区域"><a href="#所有集群节点如何成为一个大型部署区域" class="headerlink" title="所有集群节点如何成为一个大型部署区域"></a>所有集群节点如何成为一个大型部署区域</h2><p>在计算机上安装 Kubernetes 后，部署应用程序时不再需要考虑单个计算机。无论集群中工作节点的数量是多少，它们都将成为部署应用程序的单一空间。<br>可以使用Kubernetes API来实现这一点，该API是由Kubernetes控制平面提供的。<br><br><img src="/../../assets/image/k8s-in-action/3.png" alt="3"><br></p>
 <p>这里说的所有节点是一个整体，并不是说可以将一个很大的应用部署在多个节点上。而且也不必在意应用最终部署在了哪个节点上，  因为k8s可能在你不知情的时候把应用从一个节点移动到另外一个节点上，这也不是部署者需要知道到事儿。<br></p>
 <h1 id="使用k8s的好处"><a href="#使用k8s的好处" class="headerlink" title="使用k8s的好处"></a>使用k8s的好处</h1><h2 id="开发者自助部署应用程序-Self-service-development"><a href="#开发者自助部署应用程序-Self-service-development" class="headerlink" title="开发者自助部署应用程序(Self-service development)"></a>开发者自助部署应用程序(Self-service development)</h2><p>以前部署应用都是由专门的人员部署，有了k8s以后，程序可以自己通过k8s部署。他们不需要了解节点多少和节点的性能，也不用知道部署在哪个节点上，k8s将根据应用的需要的资源和节点可用的资源选择部署的节点。<br></p>
 <h2 id="通过更好的基础设施利用率降低成本"><a href="#通过更好的基础设施利用率降低成本" class="headerlink" title="通过更好的基础设施利用率降低成本"></a>通过更好的基础设施利用率降低成本</h2><p>k8s可以比人更快速地找到哪个应用更适合部署在哪个节点上，通过在一台服务器上部署多个不同的服务，k8s提高了硬件的利用率，以至于可以在更少的服务器上部署更多的应用。<br></p>
@@ -308,17 +336,17 @@
 <h2 id="保持应用程序平稳运行"><a href="#保持应用程序平稳运行" class="headerlink" title="保持应用程序平稳运行"></a>保持应用程序平稳运行</h2><p>1.当你当程序崩溃或者因为代码bug导致内存溢出，k8s可以自动为你重启应用，保证服务可以正常对外提供服务。<br>2.当硬件出现故障时，k8s可以将你的应用迁移到正常到节点上。<br>3.如果资源足够，哪怕是节点半夜出现了故障，k8s也会自动处理，运维同学则可以睡个好觉啦。</p>
 <h2 id="简化程序部署"><a href="#简化程序部署" class="headerlink" title="简化程序部署"></a>简化程序部署</h2><p>Kubernetes 提供了与基础设施相关的服务，这些服务在没有 Kubernetes 的情况下需要在自己的应用程序中实现。这包括在分布式应用程序中发现服务和&#x2F;或对等节点、领导者选举、集中式应用程序配置等。Kubernetes 在提供这些服务的同时，保持了对应用程序的“无 Kubernetes 感知”特性，但当需要时，应用程序也可以查询 Kubernetes API 以获取有关其环境的详细信息。它们还可以使用 API 来更改环境。<br></p>
 <h1 id="Kubernetes集群的架构"><a href="#Kubernetes集群的架构" class="headerlink" title="Kubernetes集群的架构"></a>Kubernetes集群的架构</h1><p>k8s集群里的节点被分成了两组：<br>1.由master节点组成的控制面板集群，是系统的大脑，控制整个集群。<br>2.运行应用的一组负载面板。</p>
-<p><img src="/../../assets/image/4.png" alt="4"><br></p>
-<h2 id="控制面板组件（control-plane）"><a href="#控制面板组件（control-plane）" class="headerlink" title="控制面板组件（control plane）"></a>控制面板组件（control plane）</h2><p>k8s的控制面板由多个组件构成，这些组件运行在master节点上，为了提高可用性，也可能运行在多个master节点上。<br><br><img src="/../../assets/image/5.png" alt="5"><br>下面是控制面板里的组件和他们的功能：</p>
+<p><img src="/../../assets/image/k8s-in-action/4.png" alt="4"><br></p>
+<h2 id="控制面板组件（control-plane）"><a href="#控制面板组件（control-plane）" class="headerlink" title="控制面板组件（control plane）"></a>控制面板组件（control plane）</h2><p>k8s的控制面板由多个组件构成，这些组件运行在master节点上，为了提高可用性，也可能运行在多个master节点上。<br><br><img src="/../../assets/image/k8s-in-action/5.png" alt="5"><br>下面是控制面板里的组件和他们的功能：</p>
 <blockquote>
 <p><strong>API Server</strong>：提供了 RESTful 风格的 Kubernetes API，工程师通过此api创建对象。它提供了 REST API 供集群内部组件和外部客户端（如 kubectl、kubelet 等）进行通信和交互。<br><strong>etcd</strong>：etcd分布式存储服务存储了通过api创建的对象，以及存储 Kubernetes 集群的所有配置数据，如 API 对象的状态信息。<br><strong>调度器</strong>：决定每个应用程序实例应在哪个工作节点上运行<br><strong>控制器（Controllers）</strong>：通过 API 激活创建的对象。它们中的大多数只是创建其他对象，但也有一些与外部系统（例如，通过其 API 与云提供商）进行通信。</p>
 </blockquote>
-<h2 id="工作节点组件（worker-node）"><a href="#工作节点组件（worker-node）" class="headerlink" title="工作节点组件（worker node）"></a>工作节点组件（worker node）</h2><p>工作组件上运行了我们的应用程序，也运行了一些k8s组件，这些组件提供了运行程序、监控、程序之间的连接等功能。<br>下图展示了工作节点上运行等k8s组件。<br><br><img src="/../../assets/image/6.png" alt="6"><br>下面是运行的k8s组件</p>
+<h2 id="工作节点组件（worker-node）"><a href="#工作节点组件（worker-node）" class="headerlink" title="工作节点组件（worker node）"></a>工作节点组件（worker node）</h2><p>工作组件上运行了我们的应用程序，也运行了一些k8s组件，这些组件提供了运行程序、监控、程序之间的连接等功能。<br>下图展示了工作节点上运行等k8s组件。<br><br><img src="/../../assets/image/k8s-in-action/6.png" alt="6"><br>下面是运行的k8s组件</p>
 <blockquote>
 <p><strong>Kubelet</strong>：是一个与API服务器通信并管理其节点上运行的应用程序的代理。它通过API报告这些应用程序和节点的状态。<br><strong>容器运行时（Container Runtime）</strong>：可以是Docker或任何与Kubernetes兼容的其他运行时（runtime）。它根据Kubelet的指示在容器中运行应用程序。<br><strong>Kubernetes服务代理（Kube-Proxy）</strong>：负责在应用程序之间负载均衡网络流量。尽管它的名字暗示流量会流经它，但实际上已经不再是这样了。Kube-Proxy的主要作用是通过网络规则来确保服务间的通信，而不是直接代理或转发流量。</p>
 </blockquote>
 <h2 id="附加组件（add-on"><a href="#附加组件（add-on" class="headerlink" title="附加组件（add-on)"></a>附加组件（add-on)</h2><p>大多数Kubernetes集群还包含其他几个组件，包括DNS服务器、网络插件、日志代理等。这些组件通常运行在工作节点上，但也可以配置为在主节点上运行。这些组件共同协作，以确保Kubernetes集群的顺利运行和高效管理。例如，DNS服务器负责集群内的服务发现，网络插件管理集群的网络配置和通信，而日志代理则负责收集和分析集群中应用程序的日志信息。<br></p>
-<h1 id="k8s是如何运行一个程序的"><a href="#k8s是如何运行一个程序的" class="headerlink" title="k8s是如何运行一个程序的"></a>k8s是如何运行一个程序的</h1><h2 id="定义应用程序"><a href="#定义应用程序" class="headerlink" title="定义应用程序"></a>定义应用程序</h2><p>在Kubernetes中，一切都被表示为对象，且通过Kubernetes API创建和检索这些对象。应用程序由这些对象的几种类型组成——一种类型代表整个应用程序的部署，另一种类型代表应用程序的<strong>一个</strong>正在运行的实例，还有一种类型代表由这些实例集合提供的服务，并允许通过单个IP地址访问它们，此外还有许多其他类型。<br><br>下图展示了通过创建一个清单文件来部署应用程序的示例，该清单文件包含两个部署，并通过两个服务对外暴露这两个部署。<br><br><img src="/../../assets/image/7.png" alt="7"><br>部署应用程序的时候会发生下面的动作：</p>
+<h1 id="k8s是如何运行一个程序的"><a href="#k8s是如何运行一个程序的" class="headerlink" title="k8s是如何运行一个程序的"></a>k8s是如何运行一个程序的</h1><h2 id="定义应用程序"><a href="#定义应用程序" class="headerlink" title="定义应用程序"></a>定义应用程序</h2><p>在Kubernetes中，一切都被表示为对象，且通过Kubernetes API创建和检索这些对象。应用程序由这些对象的几种类型组成——一种类型代表整个应用程序的部署，另一种类型代表应用程序的<strong>一个</strong>正在运行的实例，还有一种类型代表由这些实例集合提供的服务，并允许通过单个IP地址访问它们，此外还有许多其他类型。<br><br>下图展示了通过创建一个清单文件来部署应用程序的示例，该清单文件包含两个部署，并通过两个服务对外暴露这两个部署。<br><br><img src="/../../assets/image/k8s-in-action/7.png" alt="7"><br>部署应用程序的时候会发生下面的动作：</p>
 <ul>
 <li>你将应用程序清单提交给Kubernetes API。API服务器将清单中定义的对象写入etcd。</li>
 <li>一个控制器注意到新创建的对象，并为每个应用程序实例创建了一个新对象。</li>
