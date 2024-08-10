@@ -101,8 +101,137 @@ $ docker images
 ### 理解如何构建镜像（image）
 下图展示了构建镜像的过程：
 ![18](../../assets/image/k8s-in-action/18.png)
+Docker CLI 工具本身并不执行构建操作。相反，整个目录的内容会上传到 Docker 守护进程（daemon），并由它来完成镜像的构建。CLI 工具和守护进程不一定在同一台计算机上。如果在非 Linux 系统（如 macOS 或 Windows）上使用 Docker，客户端位于主机操作系统（host os）中，但守护进程在 Linux 虚拟机内运行。但守护进程也可以在远程计算机上运行。
 
+为了构建镜像，Docker 首先会从公共镜像仓库（在本例中为 Docker Hub）中拉取基础镜像（node:12），除非该镜像已经本地存储。然后，它会根据该镜像创建一个新的容器（container），并执行 Dockerfile 中的下一条指令。容器的最终状态会生成一个具有自己 ID 的新镜像。接着，构建过程会继续处理 Dockerfile 中剩余的指令。每条指令都会创建一个新的镜像。最后，最终的镜像会使用在 docker build 命令中通过 -t 标志指定的标签进行标记。
 
+### 理解镜像中的层是什么
+在构建镜像时，Dockerfile 中的每个单独指令都会创建一个新的层。
+
+在构建 kubia 镜像的过程中，在拉取基础镜像的所有层之后，Docker 会创建一个新层，并将 app.js 文件添加到该层中。然后，它会再创建一个仅包含镜像执行时运行的命令的层。这个最后的层随后被标记为 kubia:latest。
+
+您可以通过运行``docker history``来查看镜像的层及其大小，如下所示。首先打印最上层的层。
+```bash 
+$ docker history kubia:latest
+IMAGE          CREATED          CREATED BY                                      SIZE      COMMENT
+9e67beb141ec   51 seconds ago   ENTRYPOINT ["node" "app.js"]                    0B        buildkit.dockerfile.v0
+<missing>      51 seconds ago   ADD app.js /app.js # buildkit                   617B      buildkit.dockerfile.v0
+<missing>      2 years ago      /bin/sh -c #(nop)  CMD ["node"]                 0B
+<missing>      2 years ago      /bin/sh -c #(nop)  ENTRYPOINT ["docker-entry…   0B
+<missing>      2 years ago      /bin/sh -c #(nop) COPY file:4d192565a7220e13…   388B
+<missing>      2 years ago      /bin/sh -c set -ex   && for key in     6A010…   7.72MB
+<missing>      2 years ago      /bin/sh -c #(nop)  ENV YARN_VERSION=1.22.18     0B
+<missing>      2 years ago      /bin/sh -c ARCH= && dpkgArch="$(dpkg --print…   73.2MB
+<missing>      2 years ago      /bin/sh -c #(nop)  ENV NODE_VERSION=12.22.12    0B
+<missing>      2 years ago      /bin/sh -c groupadd --gid 1000 node   && use…   336kB
+<missing>      2 years ago      /bin/sh -c set -ex;  apt-get update;  apt-ge…   523MB
+<missing>      2 years ago      /bin/sh -c apt-get update && apt-get install…   136MB
+<missing>      2 years ago      /bin/sh -c set -ex;  if ! command -v gpg > /…   6.44MB
+<missing>      2 years ago      /bin/sh -c set -eux;  apt-get update;  apt-g…   21.7MB
+<missing>      2 years ago      /bin/sh -c #(nop)  CMD ["bash"]                 0B
+<missing>      2 years ago      /bin/sh -c #(nop) ADD file:73f1db8536438ca89…   95.9MB
+```
+大多数层都来自 node:12 镜像。最上面的两层对应于 Dockerfile 中的第二个和第三个指令（ADD 和 ENTRYPOINT）。
+
+正如在``CREATED BY`` 列中所看到的，每个层都是通过在容器中执行命令来创建的。除了使用 ``ADD`` 指令添加文件外，还可以在 ``Dockerfile`` 中使用其他指令。例如，RUN 指令在构建过程中在容器中执行命令。在上面的列表中有一个层，其中执行了 ``apt-get update`` 和一些附加的 ``apt-get`` 命令。``apt-get`` 是 ``Ubuntu`` 包管理器的一部分，用于安装软件包。列表中显示的命令将一些软件包安装到镜像的文件系统中。
+
+要了解 ``RUN`` 和可以在 ``Dockerfile`` 中使用的其他指令，请参阅 ``Dockerfile`` 参考文档，网址为：https://docs.docker.com/engine/reference/builder/
+
+## 运行容器镜像
+现在镜像已经构建并准备就绪，可以使用以下命令运行容器：
+```bash 
+zhangcaiwang@bogon:k8s/kubia $ docker run --name kubia-container -p 1234:8080 -d kubia
+2cecb6b0fd74d2620836bda63e01e48690065fa86036761ae70efa3ff639e42a
+zhangcaiwang@bogon:k8s/kubia $
+```
+这条命令告诉 Docker 从 kubia 镜像中运行一个新容器，名为 kubia-container。容器与控制台分离（由 -d 标志指定），并在后台运行。宿主机上的 1234 端口被映射到容器中的 8080 端口（由 -p 1234:8080 选项指定），因此您可以通过 http://localhost:1234 访问应用程序。
+
+下图展示了上面的case是如何发生的，其运行在非linux操作系统上。
+![19](../../assets/image/k8s-in-action/19.png)
+
+### 访问刚才创建的app
+```bash
+$ curl localhost:1234
+Hey there, this is 2cecb6b0fd74. Your IP is ::ffff:172.17.0.1.
+```
+其中，2cecb6b0fd74即是容器的主机名。
+
+### 列出所有运行中的容器
+要列出当前正在运行的所有容器，可以执行下面的命令
+```bash 
+$ docker ps
+CONTAINER ID   IMAGE                                 COMMAND                  CREATED          STATUS          PORTS                                                                                                                                  NAMES
+2cecb6b0fd74   kubia                                 "node app.js"            10 minutes ago   Up 10 minutes   0.0.0.0:1234->8080/tcp                                                                                                                 kubia-container
+aa6284a5aeec   gcr.io/k8s-minikube/kicbase:v0.0.44   "/usr/local/bin/entr…"   4 weeks ago      Up 4 weeks      127.0.0.1:53846->22/tcp, 127.0.0.1:53847->2376/tcp, 127.0.0.1:53849->5000/tcp, 127.0.0.1:53850->8443/tcp, 127.0.0.1:53848->32443/tcp   minikube
+```
+
+### 获取容器的额外信息
+docker ps 命令显示关于容器的最基本信息。要查看额外信息，您可以使用 docker inspect：
+```bash 
+$ docker inspect kubia-container
+```
+Docker 会打印出一个很长的 JSON 格式文档，其中包含有关容器的许多信息，例如其状态、配置和网络设置（包括 IP 地址）。
+
+### 检查应用程序日志
+Docker 捕获并存储应用程序写入标准输出和错误流的所有内容。这通常是应用程序写入日志的地方。您可以使用 docker logs 命令来查看输出，如下面的列表所示。
+
+```bash 
+ docker logs kubia-container
+Kubia server starting...
+Local hostname is 2cecb6b0fd74
+Listening on port 8080
+Received request for / from ::ffff:172.17.0.1
+Received request for /favicon.ico from ::ffff:172.17.0.1
+Received request for / from ::ffff:172.17.0.1
+```
+## 分发容器镜像（Distributing container images）
+前面构建的镜像目前仅可在本地使用。若要在其他计算机上运行它，必须将其推送到外部镜像仓库。如果将其推送到公共的 ``Docker Hub`` 仓库，这样您就不需要设置私有仓库了。当然也可以使用其他仓库，比如 Quay.io，或者 Google 容器仓库。
+
+在推送镜像之前，必须根据 ``Docker Hub`` 的镜像命名规则重新标记它。镜像名称必须包含自己的 Docker Hub ID，该 ID 是在注册 [http://hub.docker.com ](http://hub.docker.com)时选择的。
+
+## 为镜像添加额外的标签
+如下方式，使用**注册中心id/镜像名:tag**的形式可以为镜像添加标签：
+```bash 
+$ docker tag kubia zhangcaiwang/kubia:1.0
+```
+通过再次列出镜像来确认现在这个镜像有两个名称，如下所示
+```bash 
+$ docker images | head
+REPOSITORY                    TAG       IMAGE ID       CREATED         SIZE
+kubia                         latest    9e67beb141ec   2 hours ago     864MB
+zhangcaiwang/kubia            1.0       9e67beb141ec   2 hours ago     864MB
+```
+如上所示，kubia和zhangcaiwang/kubia:1.0有相同的image id，也就是说，这是一个镜像有两个名字。
+
+### 推送镜像到Docker Hub中
+在将镜像推送到 Docker Hub 之前，必须使用 docker login 命令和用户 ID 登录，如下所示：
+```bash 
+$ docker login -u zhangcaiwang -p ******  docker.io
+```
+登录完成后，使用下面的命令将镜像推送到hub中
+```bash 
+$ docker push yourid/kubia:1.0
+```
+
+## 停止运行容器并删除
+### 停止运行容器
+如果需要停止容器运行，需要执行下面的命令
+```bash 
+docker stop kubia-container
+```
+这会给容器中的主进程发送一个终止信号，以便它可以优雅地关闭。如果进程没有响应终止信号或没有及时关闭，Docker 会将其杀死。当容器中的顶级进程终止时，容器中就没有其他进程在运行了，因此容器会停止。
+
+### 删除容器
+停止运行容器后它仍然存在。Docker 会保留它，并可以通过``docker start kubia-container``重启。可以通过运行 docker ps -a 来查看已停止的容器。-a 选项会打印出所有容器——正在运行的容器和已停止的容器。
+要删除容器，可以运行以下 docker rm 命令：
+```bash 
+$ docker rm kubia-container
+```
+
+执行后容器的所有内容都将被移除，并且无法再启动。不过，镜像仍然存在。如果你决定再次创建容器，则无需再次下载镜像。如果你还想删除镜像，请使用 docker rmi 命令：
+```bash
+$ docker rmi kubia:latest
+```
 
 
 
