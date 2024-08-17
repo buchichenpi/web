@@ -2,7 +2,8 @@
 title: 文章链接收集
 date: 2024-08-11 01:22:15
 tags:
-categories: 笔记
+- 资料链接
+categories: 学习资料
 ---
 
 [https://wangwei1237.github.io/Kubernetes-in-Action-Second-Edition/docs/Understanding_what_makes_containers_possible.html
