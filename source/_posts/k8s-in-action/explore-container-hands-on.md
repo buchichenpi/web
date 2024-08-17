@@ -100,7 +100,7 @@ $ docker images
 ```
 ### 理解如何构建镜像（image）
 下图展示了构建镜像的过程：
-![18](../../assets/image/k8s-in-action/18.png)
+![18](../../assets/image/k8s-in-action/20.png)
 Docker CLI 工具本身并不执行构建操作。相反，整个目录的内容会上传到 Docker 守护进程（daemon），并由它来完成镜像的构建。CLI 工具和守护进程不一定在同一台计算机上。如果在非 Linux 系统（如 macOS 或 Windows）上使用 Docker，客户端位于主机操作系统（host os）中，但守护进程在 Linux 虚拟机内运行。但守护进程也可以在远程计算机上运行。
 
 为了构建镜像，Docker 首先会从公共镜像仓库（在本例中为 Docker Hub）中拉取基础镜像（node:12），除非该镜像已经本地存储。然后，它会根据该镜像创建一个新的容器（container），并执行 Dockerfile 中的下一条指令。容器的最终状态会生成一个具有自己 ID 的新镜像。接着，构建过程会继续处理 Dockerfile 中剩余的指令。每条指令都会创建一个新的镜像。最后，最终的镜像会使用在 docker build 命令中通过 -t 标志指定的标签进行标记。
